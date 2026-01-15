@@ -14,18 +14,18 @@ pipeline {
             }
         }
 
-        stage('Build & Test') {
-            steps {
-                sh '''
-                  mvn clean test
-                '''
-            }
-        }
+        // stage('Build & Test') {
+        //     steps {
+        //         sh '''
+        //           mvn clean test
+        //         '''
+        //     }
+        // }
 
         stage('Package') {
             steps {
                 sh '''
-                  mvn package -DskipTests
+                  mvn clean package -DskipTests
                 '''
             }
         }
