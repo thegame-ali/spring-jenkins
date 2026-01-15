@@ -1,23 +1,74 @@
 pipeline {
     agent any
 
+    environment {
+        IMAGE_NAME = "demo-app"
+        DOCKERHUB_REPO = "MdMaaz777/demo-app"
+    }
+
     stages {
+
         stage('Checkout') {
             steps {
-                // This clones the repository to the Jenkins workspace
-                git url: 'https://github.com/thegame-ali/spring-jenkins.git', branch: 'main'
+                checkout scm
             }
         }
-        
-        stage('Print Message') {
+
+        stage('Build & Test') {
             steps {
-                // This prints to the Jenkins Console Output
-                echo 'Successfully connected to the spring-jenkins repository!'
-                
-                // You can also run shell commands to list files or print system info
-                sh 'ls -ltr'
-                sh 'echo "Current workspace directory is: $(pwd)"'
+                sh '''
+                  mvn clean test
+                '''
             }
+        }
+
+        stage('Package') {
+            steps {
+                sh '''
+                  mvn package -DskipTests
+                '''
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                sh '''
+                  docker build -t ${IMAGE_NAME}:latest .
+                '''
+            }
+        }
+
+        stage('Push Docker Image') {
+            steps {
+                withDockerRegistry(credentialsId: 'Docker-Cred', url: '') {
+                    sh '''
+                      docker tag ${IMAGE_NAME}:latest ${DOCKERHUB_REPO}:latest
+                      docker push ${DOCKERHUB_REPO}:latest
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy with Docker Compose') {
+            input {
+                message "Approve deployment to PROD?"
+                ok "Deploy"
+            }
+            steps {
+                sh '''
+                  docker compose down || true
+                  docker compose up -d --build
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Application built, pushed, and deployed successfully"
+        }
+        failure {
+            echo "❌ Pipeline failed"
         }
     }
 }
