@@ -42,9 +42,11 @@ pipeline {
         }
 
         stage('Approve PROD Deployment') {
-            input {
-                message "Approve deployment to PROD?"
-                ok "Deploy"
+            steps {
+                input {
+                    message "Approve deployment to PROD?"
+                    ok "Deploy"
+                }
             }
         }
 
