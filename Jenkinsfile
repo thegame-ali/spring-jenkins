@@ -14,14 +14,6 @@ pipeline {
             }
         }
 
-        // stage('Build & Test') {
-        //     steps {
-        //         sh '''
-        //           mvn clean test
-        //         '''
-        //     }
-        // }
-
         stage('Package') {
             steps {
                 sh '''
@@ -49,11 +41,14 @@ pipeline {
             }
         }
 
-        stage('Deploy with Docker Compose') {
+        stage('Approve PROD Deployment') {
             input {
                 message "Approve deployment to PROD?"
                 ok "Deploy"
             }
+        }
+
+        stage('Deploy with Docker Compose') {
             steps {
                 sh '''
                   docker compose down || true
@@ -72,5 +67,3 @@ pipeline {
         }
     }
 }
-
-
