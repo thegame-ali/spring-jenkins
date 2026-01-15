@@ -41,15 +41,6 @@ pipeline {
             }
         }
 
-        stage('Approve PROD Deployment') {
-            steps {
-                input {
-                    message "Approve deployment to PROD?"
-                    ok "Deploy"
-                }
-            }
-        }
-
         stage('Deploy with Docker Compose') {
             steps {
                 sh '''
