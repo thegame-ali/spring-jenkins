@@ -53,10 +53,10 @@ pipeline {
 
     post {
         success {
-            echo "✅ Application built, pushed, and deployed successfully"
+            echo "Application built, pushed, and deployed successfully"
         }
         failure {
-            echo "❌ Pipeline failed"
+            echo "Pipeline failed"
         }
     }
 }
